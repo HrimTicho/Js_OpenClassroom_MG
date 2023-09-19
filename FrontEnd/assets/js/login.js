@@ -10,7 +10,7 @@ logInBtn.addEventListener('click', async()=>{
         const rep = await fetch('http://localhost:5678/api/users/login', {
             method: 'POST',
             headers: {
-                Accept : 'application/json',
+                'Accept' : 'application/json',
                 'Content-Type':'application/json',
             },
             body: JSON.stringify({
@@ -22,7 +22,7 @@ logInBtn.addEventListener('click', async()=>{
         if(rep.ok){
             const key = await rep.json();
 
-            sessionStorage.setItem('authTK', key.token);
+            localStorage.setItem('authTK', key.token);
 
             window.location.href = '../../index.html';
         }else{

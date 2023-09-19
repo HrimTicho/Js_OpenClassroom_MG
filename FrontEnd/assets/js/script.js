@@ -10,6 +10,10 @@ function cleanWork(){
     bloc_projets.innerHTML ='';
 }
 
+async function refreshWork(){
+    return (await fetch("http://localhost:5678/api/works")).json();
+}
+
 function loadWork(_cat){
     let listWork;
 
@@ -44,9 +48,11 @@ function loadWork(_cat){
     });
 }
 
+//simplifier MAP
 function loadCat(){
     let i=0;
     let tempHTML;
+    let btn;
 
     tempHTML = CreateObjectHtml(`
         <input 
@@ -58,7 +64,9 @@ function loadCat(){
     `);
 
     bloc_filter.insertAdjacentElement('beforeend', tempHTML);
-    btn_cat.push(document.getElementById(`btn_cat_${i}`));
+    btn = document.getElementById(`btn_cat_${i}`);
+
+    btn_cat.push(btn);
 
     categories.forEach(b => {
         i++;
@@ -73,12 +81,14 @@ function loadCat(){
         `);
 
         bloc_filter.insertAdjacentElement('beforeend',tempHTML);
-        btn_cat.push(document.getElementById(`btn_cat_${i}`));
+        btn = document.getElementById(`btn_cat_${i}`);
+
+        btn_cat.push(btn);
     });
 }
 
 function checkLogin(){
-    if(sessionStorage.getItem('authTK'))
+    if(localStorage.getItem('authTK'))
         return 1;
     else
         return null;
@@ -86,7 +96,7 @@ function checkLogin(){
 
 function loadModal(){
     modal_works.innerHTML ='';
-
+    btn_supr = [];
     works.forEach(b => {
         modal_works.insertAdjacentElement('beforeend',
             CreateObjectHtml(`
@@ -107,25 +117,27 @@ function loadModal(){
 
         btn_supr.push(document.getElementById(`id_${b.id}`));
     });
+
+    for(let i=0;i<btn_supr.length;i++){
+        btn_supr[i].addEventListener('click', function(){deleteWork(btn_supr[i].getAttribute('id'))});
+    }
 }
 
 async function deleteWork(_id){
     const id = parseInt(_id.replace("id_", ""));
-    console.log(`delete => ${id}`);
 
     try{
         const rep = await fetch(`http://localhost:5678/api/works/${id}`, {
-        method: 'DELETE',
-        headers: {
-            Accept : 'application/json',
-            'Content-Type':'application/json',
-            'Authorization': 'Bearer ' + sessionStorage.getItem('authTK')
-        },
-    })
-
+            method: 'DELETE',
+            headers: {
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('authTK')
+            },
+        })
         if(rep.ok){
-            /*await loadWork(0);
-            await loadModal();*/
+            works = await refreshWork();
+            loadWork(0);
+            loadModal();
 
         }else{
             console.error(rep.status + ' => ' + rep.statusText);
@@ -135,9 +147,37 @@ async function deleteWork(_id){
     }
 }
 
-const reponseWorks = await fetch("http://localhost:5678/api/works");
+async function addWork(){
+    const data = new FormData();
+
+    data.append('image', file.files[0]);
+    data.append('title', file_titre.value);
+    data.append('category', file_cat.value);
+
+    try{
+        const rep = await fetch(`http://localhost:5678/api/works`, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('authTK')
+            },
+            body: data
+        })
+        if(rep.ok){
+            works = await refreshWork();
+            await loadWork(0);
+            loadModal();
+
+        }else{
+            console.error(rep.status + ' => ' + rep.statusText);
+        }
+    } catch (e){
+        console.error('ERREUR => ', e);
+    }
+}
+
+
+let works = await refreshWork();
 const reponseCat = await fetch("http://localhost:5678/api/categories");
-const works = await reponseWorks.json();
 const categories = await reponseCat.json();
 
 const bloc_projets = document.getElementById("bloc_projets");
@@ -147,13 +187,21 @@ const modal = document.getElementById("Modal");
 const close_modal = document.getElementById("close");
 const modal_works = document.getElementById("modal_works");
 
+const file = document.getElementById("fichier");
+const file_titre = document.getElementById("titre");
+const file_cat = document.getElementById("cat");
+const file_envoyer = document.getElementById("envoyer");
+
+file_envoyer.addEventListener('click', function(){addWork()});
+
 let btn_cat = [];
 let btn_supr = [];
 let prevSelect = 0;
 
-await loadCat();
+loadCat();
 await loadWork(0);
 
+//a faire
 btn_cat[0].addEventListener('click', function(){loadWork(0)});
 btn_cat[1].addEventListener('click', function(){loadWork(1)});
 btn_cat[2].addEventListener('click', function(){loadWork(2)});
@@ -175,10 +223,8 @@ if(checkLogin()){
         </p>
     </div>
     `)).addEventListener('click', function(){modal.style.display = "block"});
-
-    for(let i=0;i<btn_supr.length;i++){
-        btn_supr[i].addEventListener('click', function(){deleteWork(btn_supr[i].getAttribute('id'))});
-    }
 }
 else
     console.log("non connecté");
+
+

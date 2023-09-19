@@ -29,12 +29,31 @@
 <main>
 	<div id="Modal" class="modal">
 		<div class="modal_content">
-			<i class="fa-solid fa-xmark" id="close"></i>
-			<h3>Galerie photo</h3>
-			<div id="modal_works">
-				
+			<div id="modal_supr">
+				<i class="fa-solid fa-xmark" id="close"></i>
+				<h3>Galerie photo</h3>
+				<div id="modal_works">
+					
+				</div>
+				<input type="button" value="Ajouter une photo" id="add_works" class="input_modal">
 			</div>
-			<input type="button" value="Ajouter une photo" id="add_works" class="input_modal">
+			<div id="modal_form">
+				<h3>Ajout photo</h3>
+				<form action="#" method="post" id="form_envoi">
+					<div class="upload-files-container">
+						<i class="fa-regular fa-image fa-2xl"></i>
+						<input type="file" accept=".jpg, .png" id="fichier" name="fichier">
+						<label id="fichier_label" for="fichier">+ Ajouter photo</label>
+						<input type="text" id="titre" name="titre">
+						<select id="cat" name="cat">
+							<option value="1">Objets</option>
+							<option value="2">Appartements</option>
+							<option value="3">Hotels & Réstaurants</option>
+						</select>
+						<input type="button" value="Valider" id="envoyer">
+					</div>
+				</form>
+			</div>
 		</div>
 	</div>
 	<section id="introduction">

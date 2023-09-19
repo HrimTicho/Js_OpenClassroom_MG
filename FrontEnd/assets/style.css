@@ -250,7 +250,7 @@ footer nav ul {
 }
 
 .modal {
-	display: none; 
+	display: none;
 	position: fixed; 
 	z-index: 1; 
 	left: 0;
@@ -357,3 +357,13 @@ footer nav ul {
 .input_modal:hover{
 	cursor: pointer;
 }
+
+/* upload image */
+#fichier {
+	display: none;
+}
+
+#fichier_label:hover {
+	cursor: pointer;
+}
+
