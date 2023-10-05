@@ -29,8 +29,11 @@
 <main>
 	<div id="Modal" class="modal">
 		<div class="modal_content">
-			<div id="modal_supr">
+			<div>
+				<i class="fa-solid fa-arrow-left" id="rtr"></i>
 				<i class="fa-solid fa-xmark" id="close"></i>
+			</div>
+			<div id="modal_supr">
 				<h3>Galerie photo</h3>
 				<div id="modal_works">
 					
@@ -38,20 +41,25 @@
 				<input type="button" value="Ajouter une photo" id="add_works" class="input_modal">
 			</div>
 			<div id="modal_form">
-				<h3>Ajout photo</h3>
-				<form action="#" method="post" id="form_envoi">
-					<div class="upload-files-container">
-						<i class="fa-regular fa-image fa-2xl"></i>
-						<input type="file" accept=".jpg, .png" id="fichier" name="fichier">
-						<label id="fichier_label" for="fichier">+ Ajouter photo</label>
-						<input type="text" id="titre" name="titre">
-						<select id="cat" name="cat">
-							<option value="1">Objets</option>
-							<option value="2">Appartements</option>
-							<option value="3">Hotels & Réstaurants</option>
-						</select>
-						<input type="button" value="Valider" id="envoyer">
+				<form action="#" method="post" id="form_envoi" class="upload-files-container">
+					<h3>Ajout photo</h3>
+					<div class="bloc_add_photo">
+						<div id="bloc_show_add_photo">
+							<i class="fa-regular fa-image fa-2xl"></i>
+							<input type="file" accept=".jpg, .png" id="fichier" name="fichier">
+							<label id="fichier_label" for="fichier">+ Ajouter photo</label>
+							<p>jpg, png : 4mo max</p>
+						</div>
+						<output id="out_file"></output>
 					</div>
+					<label for="titre" class="lbl">Titre</label>
+					<input type="text" id="titre" name="titre">
+					<label for="cat" class="lbl">Catégorie</label>
+					<select id="cat" name="cat">
+						
+					</select>
+					<div class="hr"></div>
+					<input type="button" value="Valider" id="envoyer">
 				</form>
 			</div>
 		</div>

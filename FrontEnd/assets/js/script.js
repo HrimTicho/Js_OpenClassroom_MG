@@ -87,6 +87,21 @@ function loadCat(){
     });
 }
 
+function loadCatForm(){
+    let tempHTML;
+    categories.forEach(b => {
+        tempHTML = CreateObjectHtml(`
+            <option 
+                value="${b.id}" 
+            >
+                ${b.name}
+            </option>
+        `);
+
+        file_cat.insertAdjacentElement('beforeend',tempHTML);
+    });
+}
+
 function checkLogin(){
     if(localStorage.getItem('authTK'))
         return 1;
@@ -121,6 +136,8 @@ function loadModal(){
     for(let i=0;i<btn_supr.length;i++){
         btn_supr[i].addEventListener('click', function(){deleteWork(btn_supr[i].getAttribute('id'))});
     }
+
+    loadCatForm();
 }
 
 async function deleteWork(_id){
@@ -175,6 +192,36 @@ async function addWork(){
     }
 }
 
+function Out_file_show(){
+    
+
+    if(tempFile){
+        bloc_show_add_photo.style.display = "none";
+
+        let tempHTML;
+        tempHTML = CreateObjectHtml(`
+            <div 
+                class="img_out" 
+            >
+                <img src="${URL.createObjectURL(tempFile)}">
+                <span id="out_change">changer</span>
+            </div>
+        `);
+
+        file_out.insertAdjacentElement('beforeend', tempHTML);
+        tempEventOut = document.getElementById("out_change");
+        tempEventOut.addEventListener('click', function(){Out_file_deleted()});
+    }
+    else{
+        bloc_show_add_photo.style.display = "block";
+        file_out.innerHTML='';
+    }
+}
+
+function Out_file_deleted(){
+    tempFile=null;
+    Out_file_show();
+}
 
 let works = await refreshWork();
 const reponseCat = await fetch("http://localhost:5678/api/categories");
@@ -191,8 +238,17 @@ const file = document.getElementById("fichier");
 const file_titre = document.getElementById("titre");
 const file_cat = document.getElementById("cat");
 const file_envoyer = document.getElementById("envoyer");
+const file_out = document.getElementById("out_file"); 
+const bloc_show_add_photo = document.getElementById("bloc_show_add_photo"); 
+
+let tempFile;
+let tempEventOut;
 
 file_envoyer.addEventListener('click', function(){addWork()});
+file.addEventListener("change", () => {
+    tempFile=file.files[0];
+    Out_file_show();
+});
 
 let btn_cat = [];
 let btn_supr = [];
