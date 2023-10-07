@@ -199,6 +199,7 @@ function Out_file_show(){
         bloc_show_add_photo.style.display = "none";
 
         let tempHTML;
+        file_out.innerHTML='';
         tempHTML = CreateObjectHtml(`
             <div 
                 class="img_out" 
@@ -223,17 +224,27 @@ function Out_file_deleted(){
     Out_file_show();
 }
 
+function deco(){
+    localStorage.clear();
+}
+
 let works = await refreshWork();
 const reponseCat = await fetch("http://localhost:5678/api/categories");
 const categories = await reponseCat.json();
 
+const login = document.getElementById("login");
+const bloc_porfolio = document.getElementById("portfolio");
 const bloc_projets = document.getElementById("bloc_projets");
 const bloc_filter = document.getElementById("bloc_filter");
 const bloc_header = document.getElementById("header");
 const modal = document.getElementById("Modal");
 const close_modal = document.getElementById("close");
 const modal_works = document.getElementById("modal_works");
+const sup_works = document.getElementById("modal_supr");
+const add_works = document.getElementById("modal_form");
+const add_works_photo = document.getElementById("add_works");
 
+const retour = document.getElementById("rtr");
 const file = document.getElementById("fichier");
 const file_titre = document.getElementById("titre");
 const file_cat = document.getElementById("cat");
@@ -245,6 +256,8 @@ let tempFile;
 let tempEventOut;
 
 file_envoyer.addEventListener('click', function(){addWork()});
+
+
 file.addEventListener("change", () => {
     tempFile=file.files[0];
     Out_file_show();
@@ -264,11 +277,25 @@ btn_cat[2].addEventListener('click', function(){loadWork(2)});
 btn_cat[3].addEventListener('click', function(){loadWork(3)});
 
 close_modal.addEventListener('click', function(){modal.style.display = "none"});
-
+add_works_photo.addEventListener('click', function(){
+    sup_works.style.display = "none";
+    add_works.style.display = "block";
+    retour.style.display = "inline-block"
+});
+retour.addEventListener('click', function(){
+    sup_works.style.display = "block";
+    add_works.style.display = "none";
+    retour.style.display = "none"
+});
 
 if(checkLogin()){
     console.log("connecté");
     await loadModal();
+
+    login.innerHTML ='<a href=".">logout</a>';
+    login.addEventListener('click', function(){deco()});
+
+    bloc_filter.style.display = "none";
 
     bloc_header.insertAdjacentElement('beforeend',
     CreateObjectHtml(`
@@ -279,8 +306,19 @@ if(checkLogin()){
         </p>
     </div>
     `)).addEventListener('click', function(){modal.style.display = "block"});
+
+    bloc_porfolio.children[0].insertAdjacentElement('afterend',
+    CreateObjectHtml(`
+    <div id="mode_edit_prjct">
+			<i class="fa-regular fa-pen-to-square"></i>
+			<p>
+				modifier
+			</p>
+    </div>
+    `)).addEventListener('click', function(){modal.style.display = "block"});
 }
-else
+else{
     console.log("non connecté");
+}
 
 
