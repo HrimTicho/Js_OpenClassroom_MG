@@ -68,7 +68,15 @@ body {
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
+
+footer{
+	margin-top: auto;
+}
+
 header {
 	display: flex;
 	justify-content: space-between;
@@ -276,8 +284,19 @@ footer nav ul {
 	color: #3D3D3D;
 }
 
-.log_in_form{
-	
+.error_log{
+	width: 70%;
+	height: 50px;
+	margin: auto;
+	background-color: #b34343;
+	color: white;
+	text-align: center;
+	line-height: 50px;
+	font-family: Work Sans;
+	font-size: 14px;
+	font-weight: 600;
+	letter-spacing: 0em;
+	border-radius: 25px;
 }
 
 .input_text_log{
@@ -305,6 +324,10 @@ footer nav ul {
 	text-align: center;
 	margin: auto;
 	margin-bottom: 25px;
+}
+
+.input_log:hover{
+	cursor: pointer;
 }
 
 .mode_edit{

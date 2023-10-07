@@ -1,3 +1,4 @@
+/* fonction création template HTML */
 function CreateObjectHtml(html){
 	const template = document.createElement("template");
 
@@ -6,14 +7,27 @@ function CreateObjectHtml(html){
 	return template.content.firstElementChild;
 }
 
-function cleanWork(){
-    bloc_projets.innerHTML ='';
+/* fonction verifier si connecter
+    <= retourne une valeur si connecter */
+function checkLogin(){
+    if(localStorage.getItem('authTK'))
+        return 1;
+    else
+        return null;
 }
 
+/* fonction de déconnexion */
+function deco(){
+    localStorage.clear();
+}
+
+/* fonction rafraichir la liste des travaux */
 async function refreshWork(){
     return (await fetch("http://localhost:5678/api/works")).json();
 }
 
+/* fonction afficher les travaux
+    => Selon la catégorie */
 function loadWork(_cat){
     let listWork;
 
@@ -48,7 +62,12 @@ function loadWork(_cat){
     });
 }
 
-//simplifier MAP
+/* fonction remise à zéro affichage des projets */
+function cleanWork(){
+    bloc_projets.innerHTML ='';
+}
+
+/* fonction afficher les choix de catégories */
 function loadCat(){
     let i=0;
     let tempHTML;
@@ -87,28 +106,7 @@ function loadCat(){
     });
 }
 
-function loadCatForm(){
-    let tempHTML;
-    categories.forEach(b => {
-        tempHTML = CreateObjectHtml(`
-            <option 
-                value="${b.id}" 
-            >
-                ${b.name}
-            </option>
-        `);
-
-        file_cat.insertAdjacentElement('beforeend',tempHTML);
-    });
-}
-
-function checkLogin(){
-    if(localStorage.getItem('authTK'))
-        return 1;
-    else
-        return null;
-}
-
+/* fonction afficher la liste des travaux et pouvoir les supprimer */
 function loadModal(){
     modal_works.innerHTML ='';
     btn_supr = [];
@@ -140,6 +138,8 @@ function loadModal(){
     loadCatForm();
 }
 
+/* fonction suppression de projet 
+    => selon l'ID du projet */
 async function deleteWork(_id){
     const id = parseInt(_id.replace("id_", ""));
 
@@ -164,6 +164,56 @@ async function deleteWork(_id){
     }
 }
 
+/* fonction récupérer liste catégorie pour le dropdown */
+function loadCatForm(){
+    let tempHTML;
+    categories.forEach(b => {
+        tempHTML = CreateObjectHtml(`
+            <option 
+                value="${b.id}" 
+            >
+                ${b.name}
+            </option>
+        `);
+
+        file_cat.insertAdjacentElement('beforeend',tempHTML);
+    });
+}
+
+/* fonction afficher l'image chargé pour l'ajout de projet */
+function Out_file_show(){
+    
+    if(tempFile){
+        bloc_show_add_photo.style.display = "none";
+
+        let tempHTML;
+        file_out.innerHTML='';
+        tempHTML = CreateObjectHtml(`
+            <div 
+                class="img_out" 
+            >
+                <img src="${URL.createObjectURL(tempFile)}">
+                <span id="out_change">changer</span>
+            </div>
+        `);
+
+        file_out.insertAdjacentElement('beforeend', tempHTML);
+        tempEventOut = document.getElementById("out_change");
+        tempEventOut.addEventListener('click', function(){Out_file_deleted()});
+    }
+    else{
+        bloc_show_add_photo.style.display = "block";
+        file_out.innerHTML='';
+    }
+}
+
+/* fonction pour annuler l'image ajouter pour le projet */
+function Out_file_deleted(){
+    tempFile=null;
+    Out_file_show();
+}
+
+/* fonction ajouter un projet */
 async function addWork(){
     const data = new FormData();
 
@@ -192,133 +242,108 @@ async function addWork(){
     }
 }
 
-function Out_file_show(){
+
+
+/* variables */
+    /* log */
+    const login = document.getElementById("login");
+    /* api */
+    let works = await refreshWork();
+    const reponseCat = await fetch("http://localhost:5678/api/categories");
+    const categories = await reponseCat.json();
+    /* bloc ID */
+        /* header */
+        const bloc_header = document.getElementById("header");
+        /* => filter */
+        const bloc_filter = document.getElementById("bloc_filter");
+        /* => portfolio */
+        const bloc_porfolio = document.getElementById("portfolio");
+        const bloc_projets = document.getElementById("bloc_projets");
+        /* => modal */
+        const modal = document.getElementById("Modal");
+        const close_modal = document.getElementById("close");
+        const modal_works = document.getElementById("modal_works");
+        const sup_works = document.getElementById("modal_supr");
+        const add_works = document.getElementById("modal_form");
+        const add_works_photo = document.getElementById("add_works");
+        const retour = document.getElementById("rtr");
+        const file = document.getElementById("fichier");
+        const file_titre = document.getElementById("titre");
+        const file_cat = document.getElementById("cat");
+        const file_envoyer = document.getElementById("envoyer");
+        const file_out = document.getElementById("out_file"); 
+        const bloc_show_add_photo = document.getElementById("bloc_show_add_photo"); 
+    /* temp / utilitaire */
+    let tempFile;
+    let tempEventOut;
+    let prevSelect = 0;
+    /* tableaux */
+    let btn_cat = [];
+    let btn_supr = [];
+
+/* initialisation */
+    loadCat();
+    loadWork(0);
+
+/* listener */
+    /* filtre */
+    for(let i=0;i<btn_cat.length;i++){
+        btn_cat[i].addEventListener('click', function(){loadWork(i)});
+    }
+    /* modal */
+    file_envoyer.addEventListener('click', function(){addWork()});
+
+    file.addEventListener("change", () => {
+        tempFile=file.files[0];
+        Out_file_show();
+    });
+
+    close_modal.addEventListener('click', function(){modal.style.display = "none"});
+
+    retour.addEventListener('click', function(){
+        sup_works.style.display = "block";
+        add_works.style.display = "none";
+        retour.style.display = "none"
+    });
+
+    add_works_photo.addEventListener('click', function(){
+        sup_works.style.display = "none";
+        add_works.style.display = "block";
+        retour.style.display = "inline-block"
+    });
     
+/* condition */
+    if(checkLogin()){
+        console.log("connecté");
+        await loadModal();
 
-    if(tempFile){
-        bloc_show_add_photo.style.display = "none";
+        login.innerHTML ='<a href=".">logout</a>';
+        login.addEventListener('click', function(){deco()});
 
-        let tempHTML;
-        file_out.innerHTML='';
-        tempHTML = CreateObjectHtml(`
-            <div 
-                class="img_out" 
-            >
-                <img src="${URL.createObjectURL(tempFile)}">
-                <span id="out_change">changer</span>
-            </div>
-        `);
+        bloc_filter.style.display = "none";
 
-        file_out.insertAdjacentElement('beforeend', tempHTML);
-        tempEventOut = document.getElementById("out_change");
-        tempEventOut.addEventListener('click', function(){Out_file_deleted()});
+        bloc_header.insertAdjacentElement('beforeend',
+        CreateObjectHtml(`
+        <div class="mode_edit">
+            <i class="fa-regular fa-pen-to-square"></i>
+            <p>
+                Mode édition
+            </p>
+        </div>
+        `)).addEventListener('click', function(){modal.style.display = "block"});
+
+        bloc_porfolio.children[0].insertAdjacentElement('afterend',
+        CreateObjectHtml(`
+        <div id="mode_edit_prjct">
+                <i class="fa-regular fa-pen-to-square"></i>
+                <p>
+                    modifier
+                </p>
+        </div>
+        `)).addEventListener('click', function(){modal.style.display = "block"});
     }
     else{
-        bloc_show_add_photo.style.display = "block";
-        file_out.innerHTML='';
+        console.log("non connecté");
     }
-}
-
-function Out_file_deleted(){
-    tempFile=null;
-    Out_file_show();
-}
-
-function deco(){
-    localStorage.clear();
-}
-
-let works = await refreshWork();
-const reponseCat = await fetch("http://localhost:5678/api/categories");
-const categories = await reponseCat.json();
-
-const login = document.getElementById("login");
-const bloc_porfolio = document.getElementById("portfolio");
-const bloc_projets = document.getElementById("bloc_projets");
-const bloc_filter = document.getElementById("bloc_filter");
-const bloc_header = document.getElementById("header");
-const modal = document.getElementById("Modal");
-const close_modal = document.getElementById("close");
-const modal_works = document.getElementById("modal_works");
-const sup_works = document.getElementById("modal_supr");
-const add_works = document.getElementById("modal_form");
-const add_works_photo = document.getElementById("add_works");
-
-const retour = document.getElementById("rtr");
-const file = document.getElementById("fichier");
-const file_titre = document.getElementById("titre");
-const file_cat = document.getElementById("cat");
-const file_envoyer = document.getElementById("envoyer");
-const file_out = document.getElementById("out_file"); 
-const bloc_show_add_photo = document.getElementById("bloc_show_add_photo"); 
-
-let tempFile;
-let tempEventOut;
-
-file_envoyer.addEventListener('click', function(){addWork()});
-
-
-file.addEventListener("change", () => {
-    tempFile=file.files[0];
-    Out_file_show();
-});
-
-let btn_cat = [];
-let btn_supr = [];
-let prevSelect = 0;
-
-loadCat();
-await loadWork(0);
-
-//a faire
-btn_cat[0].addEventListener('click', function(){loadWork(0)});
-btn_cat[1].addEventListener('click', function(){loadWork(1)});
-btn_cat[2].addEventListener('click', function(){loadWork(2)});
-btn_cat[3].addEventListener('click', function(){loadWork(3)});
-
-close_modal.addEventListener('click', function(){modal.style.display = "none"});
-add_works_photo.addEventListener('click', function(){
-    sup_works.style.display = "none";
-    add_works.style.display = "block";
-    retour.style.display = "inline-block"
-});
-retour.addEventListener('click', function(){
-    sup_works.style.display = "block";
-    add_works.style.display = "none";
-    retour.style.display = "none"
-});
-
-if(checkLogin()){
-    console.log("connecté");
-    await loadModal();
-
-    login.innerHTML ='<a href=".">logout</a>';
-    login.addEventListener('click', function(){deco()});
-
-    bloc_filter.style.display = "none";
-
-    bloc_header.insertAdjacentElement('beforeend',
-    CreateObjectHtml(`
-    <div class="mode_edit">
-        <i class="fa-regular fa-pen-to-square"></i>
-        <p>
-            Mode édition
-        </p>
-    </div>
-    `)).addEventListener('click', function(){modal.style.display = "block"});
-
-    bloc_porfolio.children[0].insertAdjacentElement('afterend',
-    CreateObjectHtml(`
-    <div id="mode_edit_prjct">
-			<i class="fa-regular fa-pen-to-square"></i>
-			<p>
-				modifier
-			</p>
-    </div>
-    `)).addEventListener('click', function(){modal.style.display = "block"});
-}
-else{
-    console.log("non connecté");
-}
 
 

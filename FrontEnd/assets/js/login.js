@@ -26,7 +26,10 @@ logInBtn.addEventListener('click', async()=>{
 
             window.location.href = '../../index.html';
         }else{
-            error.textContent = 'Identifiant inconnu';
+            error.insertAdjacentHTML('beforeBegin',`<div class="error_log">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>Erreur dans l'identifiant ou le mot de passe</span>
+            </div>`);
         }
     } catch (e){
         console.error('ERREUR => ', e);
