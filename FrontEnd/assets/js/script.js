@@ -167,6 +167,7 @@ async function deleteWork(_id){
 /* fonction récupérer liste catégorie pour le dropdown */
 function loadCatForm(){
     let tempHTML;
+    file_cat.innerHTML = '';
     categories.forEach(b => {
         tempHTML = CreateObjectHtml(`
             <option 
@@ -233,7 +234,10 @@ async function addWork(){
             works = await refreshWork();
             await loadWork(0);
             loadModal();
-
+            sup_works.style.display = "block";
+            add_works.style.display = "none";
+            retour.style.display = "none";
+            tempFile=null;
         }else{
             console.error(rep.status + ' => ' + rep.statusText);
         }
