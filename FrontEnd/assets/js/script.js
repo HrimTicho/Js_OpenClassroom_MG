@@ -201,10 +201,15 @@ function Out_file_show(){
         file_out.insertAdjacentElement('beforeend', tempHTML);
         tempEventOut = document.getElementById("out_change");
         tempEventOut.addEventListener('click', function(){Out_file_deleted()});
+
+        if(file_titre.value){
+            file_envoyer.style.backgroundColor = "#1D6154";
+        }
     }
     else{
         bloc_show_add_photo.style.display = "block";
         file_out.innerHTML='';
+        file_envoyer.style.backgroundColor = "#A7A7A7";
     }
 }
 
@@ -238,6 +243,7 @@ async function addWork(){
             add_works.style.display = "none";
             retour.style.display = "none";
             tempFile=null;
+            file_titre.value = '';
         }else{
             console.error(rep.status + ' => ' + rep.statusText);
         }
@@ -314,6 +320,14 @@ async function addWork(){
         sup_works.style.display = "none";
         add_works.style.display = "block";
         retour.style.display = "inline-block"
+    });
+
+    file_titre.addEventListener("change", () => {
+        if(file_titre.value && tempFile){
+            file_envoyer.style.backgroundColor = "#1D6154";
+        }else{
+            file_envoyer.style.backgroundColor = "#A7A7A7";
+        }
     });
     
 /* condition */
